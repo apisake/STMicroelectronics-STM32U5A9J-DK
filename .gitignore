@@ -1,0 +1,9 @@
+Debug/
+Release/
+.metadata/
+**/.settings/language.settings.xml
+*.launch
+.DS_Store
+build/
+__pycache__/
+*.o
