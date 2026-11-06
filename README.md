@@ -16,7 +16,7 @@
 >
 > ประวัติการแก้ไขและเพิ่มเติมทั้งหมดดูได้ที่ [CHANGELOG.md](CHANGELOG.md)
 >
-> สไลด์อธิบายโปรเจกต์ (HTML, 15 หน้า): [docs/slides.html](docs/slides.html) ดาวน์โหลดแล้วเปิดในเบราว์เซอร์ ใช้ปุ่ม ← → เปลี่ยนหน้า กด F เพื่อเต็มจอ
+> สไลด์อธิบายโปรเจกต์ (HTML, 15 หน้า + ภาคผนวก FSM 8 หน้า): [docs/slides.html](docs/slides.html) ดาวน์โหลดแล้วเปิดในเบราว์เซอร์ ใช้ปุ่ม ← → เปลี่ยนหน้า กด F เพื่อเต็มจอ
 >
 > Finite State Machine ของโปรแกรม (10 FSM พร้อมแผนภาพ Mermaid): [docs/state_machine.md](docs/state_machine.md)
 
