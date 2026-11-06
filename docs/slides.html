@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>STM32U5A9J-DK Radar Clock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #03080a;
+    --panel: #07130f;
+    --panel-2: #0b1d17;
+    --line: #12392c;
+    --text: #e6f4ee;
+    --muted: #8fb3a5;
+    --accent: #22ff7a;
+    --accent-2: #2ed3ff;
+    --warn: #ff8a00;
+    --danger: #ff3b3b;
+    --contrast: #ff4fd8;
+    --slide-w: 1280px;
+    --slide-h: 720px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font-family: "Prompt", system-ui, sans-serif; overflow: hidden; }
+  code, .mono { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+
+  /* ---------- stage: fixed 16:9 slide scaled to the viewport ---------- */
+  #stage { position: fixed; inset: 0; }
+  #deck { position: absolute; left: 50%; top: 50%; width: var(--slide-w); height: var(--slide-h);
+    transform-origin: center center; transform: translate(-50%, -50%); }
+  .slide { position: absolute; inset: 0; padding: 56px 72px 64px; display: none; flex-direction: column;
+    background:
+      radial-gradient(1200px 700px at 85% -10%, rgba(34,255,122,.08), transparent 60%),
+      radial-gradient(900px 600px at -10% 110%, rgba(46,211,255,.06), transparent 60%),
+      var(--bg);
+    border: 1px solid var(--line); border-radius: 18px; overflow: hidden; }
+  .slide.active { display: flex; animation: in .35s ease both; }
+  @keyframes in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  .kicker { font-size: 15px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+  h1 { font-size: 64px; line-height: 1.12; margin: 10px 0 14px; font-weight: 700; }
+  h2 { font-size: 40px; line-height: 1.2; margin: 6px 0 22px; font-weight: 600; }
+  h3 { font-size: 22px; margin: 0 0 10px; font-weight: 600; color: var(--accent); }
+  p, li { font-size: 21px; line-height: 1.55; color: var(--text); }
+  .muted { color: var(--muted); }
+  ul { margin: 0; padding-left: 1.1em; }
+  li { margin: 6px 0; }
+  li::marker { color: var(--accent); }
+  a { color: var(--accent-2); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; min-height: 0; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .card { background: linear-gradient(180deg, var(--panel-2), var(--panel)); border: 1px solid var(--line);
+    border-radius: 16px; padding: 22px 24px; }
+  .card p, .card li { font-size: 18px; }
+  .col { display: flex; flex-direction: column; gap: 12px; }
+  .col .card { padding: 16px 20px; }
+  .col .card h3 { margin-bottom: 6px; }
+  .col .card p { font-size: 17px; line-height: 1.5; margin: 0; }
+  .tag { display: inline-block; font-size: 14px; padding: 3px 12px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted); margin: 0 6px 6px 0; }
+  .tag.on { border-color: var(--accent); color: var(--accent); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 18px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--accent); font-weight: 600; width: 30%; }
+
+  .footer { position: absolute; left: 72px; right: 72px; bottom: 22px; display: flex; justify-content: space-between;
+    font-size: 13px; color: var(--muted); letter-spacing: .06em; }
+  .big-num { font-size: 72px; font-weight: 700; line-height: 1; color: var(--accent); }
+  .code { background: #020605; border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px;
+    font-size: 16px; line-height: 1.6; color: #bfeed9; white-space: pre; overflow: hidden; }
+  .code .c { color: #4d7d6b; }
+  .code .k { color: var(--accent-2); }
+
+  /* ---------- title slide ---------- */
+  .title-wrap { display: grid; grid-template-columns: 1.15fr .85fr; gap: 30px; align-items: center; flex: 1; }
+  .brand { font-size: 20px; color: var(--muted); margin-top: 18px; }
+
+  /* ---------- timeline ---------- */
+  .timeline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-top: 8px; }
+  .step { position: relative; padding: 16px 16px 18px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); }
+  .step b { display: block; font-size: 15px; color: var(--accent); margin-bottom: 6px; font-family: "JetBrains Mono", monospace; }
+  .step span { font-size: 16px; line-height: 1.45; display: block; }
+
+  /* ---------- day colours ---------- */
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 14px; margin-top: 10px; }
+  .day { border-radius: 16px; padding: 16px 10px 14px; text-align: center; border: 2px solid var(--c);
+    background: color-mix(in srgb, var(--c) 7%, #000); }
+  .day .dot { width: 64px; height: 64px; margin: 4px auto 10px; border-radius: 50%; border: 3px solid var(--c);
+    position: relative; }
+  .day .dot::after { content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--k); right: -6px; top: 6px; box-shadow: 0 0 0 3px #000; }
+  .day .n { font-size: 19px; font-weight: 600; color: var(--c); }
+  .day .s { font-size: 14px; color: var(--muted); }
+
+  /* ---------- fps bars ---------- */
+  .bars { display: flex; flex-direction: column; gap: 18px; margin-top: 6px; }
+  .bar { display: grid; grid-template-columns: 250px 1fr 80px; align-items: center; gap: 16px; font-size: 19px; }
+  .bar .track { height: 30px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .bar .fill { height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); border-radius: 8px 0 0 8px; }
+  .bar .v { font-family: "JetBrains Mono", monospace; color: var(--accent); font-weight: 600; text-align: right; }
+
+  /* ---------- nav ---------- */
+  #progress { position: fixed; left: 0; top: 0; height: 3px; background: var(--accent); transition: width .25s; z-index: 5; }
+  #nav { position: fixed; right: 18px; bottom: 14px; display: flex; gap: 8px; align-items: center; z-index: 5;
+    font-size: 14px; color: var(--muted); }
+  #nav button { background: var(--panel); color: var(--text); border: 1px solid var(--line); border-radius: 10px;
+    width: 40px; height: 34px; font-size: 18px; cursor: pointer; }
+  #nav button:hover { border-color: var(--accent); color: var(--accent); }
+  #hint { position: fixed; left: 18px; bottom: 16px; font-size: 13px; color: var(--muted); z-index: 5; }
+
+  @media print {
+    html, body { overflow: visible; background: #000; }
+    #stage { position: static; display: block; }
+    #deck { position: static; transform: none !important; width: auto; height: auto; }
+    .slide { position: relative; display: flex !important; width: var(--slide-w); height: var(--slide-h);
+      page-break-after: always; margin: 0 auto 10px; animation: none; }
+    #nav, #progress, #hint { display: none; }
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<div id="stage"><div id="deck">
+
+<!-- 1. title -->
+<section class="slide">
+  <div class="title-wrap">
+    <div>
+      <div class="kicker">STMicroelectronics · STM32U5A9J-DK</div>
+      <h1>นาฬิกาเรดาร์ Sci-Fi<br>บนจอกลม 480×480</h1>
+      <p class="muted">เฟิร์มแวร์ภาษาไทยด้วย LVGL 9.6 + NeoChrom GPU<br>สีประจำวันแบบไทย · ตีบอกเวลา · นาฬิกาปลุก · จับเวลา</p>
+      <div class="brand">พฤศจิกายน 2569 · v1.0.0</div>
+    </div>
+    <svg viewBox="0 0 400 400" width="420" height="420" aria-label="radar clock face">
+      <defs>
+        <radialGradient id="g1" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#0b2a1c"/><stop offset="1" stop-color="#020806"/></radialGradient>
+        <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#22ff7a" stop-opacity="0"/><stop offset="1" stop-color="#22ff7a" stop-opacity=".55"/></linearGradient>
+      </defs>
+      <circle cx="200" cy="200" r="196" fill="url(#g1)" stroke="#22ff7a" stroke-width="2"/>
+      <g fill="none" stroke="#22ff7a" stroke-opacity=".25"><circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="120"/><circle cx="200" cy="200" r="168" stroke-opacity=".45"/></g>
+      <g stroke="#22ff7a" stroke-opacity=".25"><line x1="200" y1="30" x2="200" y2="80"/><line x1="200" y1="320" x2="200" y2="370"/><line x1="30" y1="200" x2="80" y2="200"/><line x1="320" y1="200" x2="370" y2="200"/></g>
+      <path d="M200 200 L200 30 A170 170 0 0 1 322 82 Z" fill="url(#beam)" opacity=".9"/>
+      <line x1="200" y1="200" x2="322" y2="82" stroke="#22ff7a" stroke-width="3"/>
+      <text x="200" y="215" text-anchor="middle" font-family="Prompt" font-weight="600" font-size="78" fill="#d8ffe9">09:25</text>
+      <text x="200" y="150" text-anchor="middle" font-family="Prompt" font-size="22" fill="#22ff7a">วันศุกร์</text>
+      <text x="200" y="262" text-anchor="middle" font-family="Prompt" font-size="17" fill="#22ff7a">6 พฤศจิกายน 2569</text>
+      <circle cx="58" cy="184" r="13" fill="#ff4fd8" stroke="#03100a" stroke-width="3"/>
+      <circle cx="300" cy="333" r="7" fill="#ff4fd8" stroke="#03100a" stroke-width="2"/>
+      <text x="92" y="190" font-family="Prompt" font-size="16" fill="#ff4fd8">ชม.</text>
+      <text x="262" y="318" font-family="Prompt" font-size="15" fill="#ff4fd8">นาที</text>
+    </svg>
+  </div>
+  <div class="footer"><span>github.com/apisake/STMicroelectronics-STM32U5A9J-DK</span><span>01</span></div>
+</section>
+
+<!-- 2. board -->
+<section class="slide">
+  <div class="kicker">ฮาร์ดแวร์</div>
+  <h2>บอร์ด STMicroelectronics STM32U5A9J-DK</h2>
+  <div class="grid2">
+    <table>
+      <tr><th>ยี่ห้อ</th><td>STMicroelectronics (ST)</td></tr>
+      <tr><th>รุ่น</th><td>STM32U5A9J-DK (Discovery kit)</td></tr>
+      <tr><th>MCU</th><td>STM32U5A9NJH6Q · Cortex-M33 160 MHz<br>Flash 4 MB · SRAM 2.5 MB · TrustZone</td></tr>
+      <tr><th>กราฟิก</th><td>NeoChrom GPU2D · LTDC · GFXMMU · DMA2D</td></tr>
+      <tr><th>จอ</th><td>TFT กลม 2.47" 480×480 · MIPI-DSI · ทัชสกรีน</td></tr>
+      <tr><th>เซนเซอร์</th><td>อุณหภูมิ STTS22H · ToF VL53L5CX</td></tr>
+      <tr><th>ดีบัก</th><td>STLINK-V3E · Virtual COM · ไดรฟ์ DIS_U5A9NJ</td></tr>
+    </table>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div class="card">
+        <h3>หน้าข้อมูลบอร์ด</h3>
+        <p><a href="https://www.st.com/en/evaluation-tools/stm32u5a9j-dk.html">st.com/en/evaluation-tools/stm32u5a9j-dk.html</a></p>
+      </div>
+      <div class="card" style="border-color:#5a3a0a">
+        <h3 style="color:var(--warn)">สถานะ: OBSOLETE</h3>
+        <p>ST แนะนำให้ใช้ <b>STM32U5G9J-DK1</b> แทน (ใช้แพลตฟอร์มเดียวกัน)</p>
+      </div>
+      <div class="card">
+        <h3>ข้อควรระวัง</h3>
+        <p>ระบบไฟของบอร์ดใช้ <b>VDD = 1.8 V</b> ถ้าต่ออุปกรณ์ภายนอกที่ใช้ 3.3 V ต้องมี level shifter<br>บอร์ด<b>ไม่มี</b> WiFi, Bluetooth และลำโพง</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer"><span>ข้อมูลบอร์ด</span><span>02</span></div>
+</section>
+
+<!-- 3. features -->
+<section class="slide">
+  <div class="kicker">ภาพรวม</div>
+  <h2>ฟีเจอร์ทั้งหมด</h2>
+  <div class="grid3" style="flex:1">
+    <div class="card"><h3>หน้าเรดาร์ (นาฬิกา)</h3><ul>
+      <li>ตัวเลขนาฬิกา 130 px ฟอนต์ Prompt</li><li>ลำแสงกวาดทำหน้าที่เป็นเข็มวินาที</li><li>จุดบอก ชม./นาที ใช้สีตัดกับสีประจำวัน</li><li>วันที่ภาษาไทยแบบ พ.ศ.</li></ul></div>
+    <div class="card"><h3>4 หน้า ปัดซ้าย/ขวา</h3><ul>
+      <li>เรดาร์</li><li>บันทึกอุณหภูมิ 20 นาที</li><li>จับเวลา 0.01 วินาที</li><li>นาฬิกาปลุก + ตีบอกเวลา</li></ul></div>
+    <div class="card"><h3>ระบบ</h3><ul>
+      <li>สีประจำวันแบบไทย 7 สี</li><li>ตีบอกเวลาทุกต้นชั่วโมง</li><li>RTC คริสตัล LSE + ซิงก์เวลากับ Mac</li><li>Stop 2 ปลุกด้วยการแตะ/ปุ่ม/เวลาปลุก</li></ul></div>
+  </div>
+  <div style="margin-top:20px">
+    <span class="tag on">LVGL 9.6.0</span><span class="tag on">NeoChrom GPU2D</span><span class="tag on">ภาษาไทย</span>
+    <span class="tag">STM32 HAL</span><span class="tag">BSP v1.3.1</span><span class="tag">Arm GCC 12.2</span><span class="tag">macOS toolchain</span>
+  </div>
+  <div class="footer"><span>ฟีเจอร์</span><span>03</span></div>
+</section>
+
+<!-- 4. architecture -->
+<section class="slide">
+  <div class="kicker">สถาปัตยกรรม</div>
+  <h2>โครงสร้างซอฟต์แวร์</h2>
+  <svg viewBox="0 0 1136 470" width="1136" height="470" font-family="Prompt" aria-label="software architecture">
+    <style>
+      .bx{fill:#07130f;stroke:#12392c;stroke-width:1.5}
+      .hl{fill:#0b2418;stroke:#22ff7a;stroke-width:1.5}
+      .t{fill:#e6f4ee;font-size:19px}
+      .s{fill:#8fb3a5;font-size:14px}
+      .ln{stroke:#2a6a52;stroke-width:1.5}
+    </style>
+    <!-- layer labels -->
+    <text x="0" y="52" class="s">แอปพลิเคชัน</text>
+    <text x="0" y="172" class="s">กราฟิก</text>
+    <text x="0" y="292" class="s">ไดรเวอร์</text>
+    <text x="0" y="412" class="s">ฮาร์ดแวร์</text>
+    <!-- app -->
+    <rect x="110" y="16" width="230" height="74" rx="12" class="hl"/><text x="225" y="50" text-anchor="middle" class="t">ui_radar.c</text><text x="225" y="74" text-anchor="middle" class="s">เรดาร์ · จุดบอกเวลา</text>
+    <rect x="356" y="16" width="230" height="74" rx="12" class="hl"/><text x="471" y="50" text-anchor="middle" class="t">ui_pages_misc.c</text><text x="471" y="74" text-anchor="middle" class="s">อุณหภูมิ · จับเวลา · ปลุก</text>
+    <rect x="602" y="16" width="230" height="74" rx="12" class="hl"/><text x="717" y="50" text-anchor="middle" class="t">ui_main / ui_theme</text><text x="717" y="74" text-anchor="middle" class="s">หน้า · สีประจำวัน · ตีบอกเวลา</text>
+    <rect x="848" y="16" width="288" height="74" rx="12" class="hl"/><text x="992" y="50" text-anchor="middle" class="t">main.c</text><text x="992" y="74" text-anchor="middle" class="s">ลูปหลัก · UART · Stop 2</text>
+    <!-- gfx -->
+    <rect x="110" y="136" width="476" height="74" rx="12" class="bx"/><text x="348" y="170" text-anchor="middle" class="t">LVGL 9.6 + NemaGFX renderer</text><text x="348" y="194" text-anchor="middle" class="s">partial buffers 2 × 480×120 ARGB8888</text>
+    <rect x="602" y="136" width="230" height="74" rx="12" class="bx"/><text x="717" y="170" text-anchor="middle" class="t">lvgl_port.c</text><text x="717" y="194" text-anchor="middle" class="s">flush หมุน 180° · touch</text>
+    <rect x="848" y="136" width="288" height="74" rx="12" class="bx"/><text x="992" y="170" text-anchor="middle" class="t">thai_text.c + fonts</text><text x="992" y="194" text-anchor="middle" class="s">Prompt · วรรณยุกต์ซ้อน</text>
+    <!-- drivers -->
+    <rect x="110" y="256" width="356" height="74" rx="12" class="bx"/><text x="288" y="290" text-anchor="middle" class="t">BSP STM32U5x9J-DK</text><text x="288" y="314" text-anchor="middle" class="s">LCD · TS · ENV · COM · Button</text>
+    <rect x="482" y="256" width="350" height="74" rx="12" class="bx"/><text x="657" y="290" text-anchor="middle" class="t">STM32U5 HAL</text><text x="657" y="314" text-anchor="middle" class="s">DSI · LTDC · GFXMMU · GPU2D · RTC · UART</text>
+    <rect x="848" y="256" width="288" height="74" rx="12" class="bx"/><text x="992" y="290" text-anchor="middle" class="t">rtc_clock.c</text><text x="992" y="314" text-anchor="middle" class="s">LSE · Alarm A/B · backup regs</text>
+    <!-- hw -->
+    <rect x="110" y="376" width="1026" height="74" rx="12" class="bx"/>
+    <text x="623" y="410" text-anchor="middle" class="t">STM32U5A9NJH6Q · NeoChrom GPU2D · จอกลม MIPI-DSI · Sitronix touch (I2C5) · STTS22H (I2C3) · STLINK-V3E</text>
+    <text x="623" y="434" text-anchor="middle" class="s">framebuffer 720 KB ใน SRAM ภายในผ่าน GFXMMU (เก็บเฉพาะพิกเซลในวงกลม)</text>
+    <!-- connectors -->
+    <g class="ln"><line x1="348" y1="90" x2="348" y2="136"/><line x1="717" y1="90" x2="717" y2="136"/><line x1="992" y1="90" x2="992" y2="136"/>
+    <line x1="288" y1="210" x2="288" y2="256"/><line x1="657" y1="210" x2="657" y2="256"/><line x1="992" y1="210" x2="992" y2="256"/>
+    <line x1="288" y1="330" x2="288" y2="376"/><line x1="657" y1="330" x2="657" y2="376"/><line x1="992" y1="330" x2="992" y2="376"/></g>
+  </svg>
+  <div class="footer"><span>สถาปัตยกรรม</span><span>04</span></div>
+</section>
+
+<!-- 5. journey -->
+<section class="slide">
+  <div class="kicker">เส้นทางการพัฒนา</div>
+  <h2>จากไฟ LED กะพริบ สู่นาฬิกาเรดาร์</h2>
+  <div class="timeline">
+    <div class="step"><b>0.1 – 0.2</b><span>สร้างโปรเจกต์ ให้ LED กะพริบ และ printf ผ่าน UART</span></div>
+    <div class="step"><b>0.3 – 0.4</b><span>จอกลม, ทัชสกรีน และเซนเซอร์อุณหภูมิ</span></div>
+    <div class="step"><b>0.5</b><span>LVGL 9.6 + RTC (LSE)</span></div>
+    <div class="step"><b>0.6</b><span>UI แนว Sci-Fi Radar, GPU, Stop 2 และนาฬิกาปลุก</span></div>
+    <div class="step"><b>0.7</b><span>ภาษาไทย ฟอนต์ Prompt ตัวเลข 130 px</span></div>
+    <div class="step"><b>0.8 – 1.0</b><span>สีประจำวัน, ตีบอกเวลา, จุดบอกเวลา, ขึ้น GitHub</span></div>
+  </div>
+  <div class="grid3" style="margin-top:26px">
+    <div class="card"><div class="big-num">11</div><p class="muted">รุ่นใน CHANGELOG</p></div>
+    <div class="card"><div class="big-num">539</div><p class="muted">ไฟล์ C ที่คอมไพล์ (รวม LVGL)</p></div>
+    <div class="card"><div class="big-num">~6 s</div><p class="muted">เวลา build ทั้งโปรเจกต์ (ขนาน 8 งาน)</p></div>
+  </div>
+  <div class="footer"><span>ไทม์ไลน์ · ดู CHANGELOG.md</span><span>05</span></div>
+</section>
+
+<!-- 6. display pipeline -->
+<section class="slide">
+  <div class="kicker">ระบบแสดงผล</div>
+  <h2>เส้นทางของพิกเซล: จาก LVGL ถึงจอกลม</h2>
+  <svg viewBox="0 0 1136 200" width="1136" height="200" font-family="Prompt" aria-label="display pipeline">
+    <style>.p{fill:#07130f;stroke:#22ff7a;stroke-width:1.5}.pt{fill:#e6f4ee;font-size:18px}.ps{fill:#8fb3a5;font-size:13px}.ar{stroke:#22ff7a;stroke-width:2;marker-end:url(#ah)}</style>
+    <defs><marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#22ff7a"/></marker></defs>
+    <rect x="0" y="40" width="190" height="110" rx="12" class="p"/><text x="95" y="86" text-anchor="middle" class="pt">LVGL render</text><text x="95" y="110" text-anchor="middle" class="ps">NeoChrom / CPU</text><text x="95" y="130" text-anchor="middle" class="ps">buffer 480×120</text>
+    <rect x="236" y="40" width="190" height="110" rx="12" class="p"/><text x="331" y="86" text-anchor="middle" class="pt">flush_cb</text><text x="331" y="110" text-anchor="middle" class="ps">หมุนภาพ 180°</text><text x="331" y="130" text-anchor="middle" class="ps">คัดลอกทีละแถว</text>
+    <rect x="472" y="40" width="190" height="110" rx="12" class="p"/><text x="567" y="86" text-anchor="middle" class="pt">GFXMMU</text><text x="567" y="110" text-anchor="middle" class="ps">virtual FB</text><text x="567" y="130" text-anchor="middle" class="ps">3072 B / แถว</text>
+    <rect x="708" y="40" width="190" height="110" rx="12" class="p"/><text x="803" y="86" text-anchor="middle" class="pt">LTDC → DSI</text><text x="803" y="110" text-anchor="middle" class="ps">video mode</text><text x="803" y="130" text-anchor="middle" class="ps">PLL3 จาก HSE</text>
+    <rect x="944" y="40" width="190" height="110" rx="12" class="p"/><text x="1039" y="86" text-anchor="middle" class="pt">จอกลม</text><text x="1039" y="110" text-anchor="middle" class="ps">480×480</text><text x="1039" y="130" text-anchor="middle" class="ps">ARGB8888</text>
+    <line x1="190" y1="95" x2="232" y2="95" class="ar"/><line x1="426" y1="95" x2="468" y2="95" class="ar"/><line x1="662" y1="95" x2="704" y2="95" class="ar"/><line x1="898" y1="95" x2="940" y2="95" class="ar"/>
+  </svg>
+  <div class="grid2" style="margin-top:6px">
+    <div class="card"><h3 style="color:var(--danger)">เจอบั๊กใน BSP ของ ST</h3>
+      <p><code>BSP_LCD_FillRGBRect()</code> (BSP v1.3.1) คิดตำแหน่งข้อมูลต้นทางจากคอลัมน์ <code>j</code> อย่างเดียว ไม่ได้รวมแถว <code>i</code> จึงคัดลอก<b>แถวแรกซ้ำทุกบรรทัด</b><br>แก้โดยเขียน flush เองให้เขียนลง framebuffer เสมือนตรง ๆ</p></div>
+    <div class="card"><h3>ข้อกำหนดของจอ</h3><ul>
+      <li>ต้องเปิด <b>HSE</b> เพราะ PLL3 ใช้ HSE</li><li>ต้องมี IRQ handler ของ GFXMMU, LTDC, LTDC_ER และ DSI</li><li>framebuffer 720 KB ใน SRAM ภายในชิป</li></ul></div>
+  </div>
+  <div class="footer"><span>ระบบแสดงผล</span><span>06</span></div>
+</section>
+
+<!-- 7. performance -->
+<section class="slide">
+  <div class="kicker">ความเร็ว</div>
+  <h2>NeoChrom GPU: เร็วขึ้นราว 3.5 เท่า</h2>
+  <div class="bars">
+    <div class="bar"><span>Software (CPU)</span><div class="track"><div class="fill" style="width:27%"></div></div><span class="v">8</span></div>
+    <div class="bar"><span>GPU รุ่นแรก</span><div class="track"><div class="fill" style="width:57%"></div></div><span class="v">17</span></div>
+    <div class="bar"><span>GPU + ปรับแต่ง</span><div class="track"><div class="fill" style="width:93%"></div></div><span class="v">28</span></div>
+    <div class="bar"><span>ระหว่างตีบอกเวลา</span><div class="track"><div class="fill" style="width:57%;background:linear-gradient(90deg,#ff8a00,#ffd60a)"></div></div><span class="v" style="color:var(--warn)">17</span></div>
+  </div>
+  <p class="muted" style="margin-top:14px;font-size:16px">fps บนหน้าเรดาร์ วัดจาก UART (LV_EVENT_RENDER_READY) · เพดาน 30 fps (LVGL refresh 33 ms)</p>
+  <div class="grid3" style="margin-top:10px">
+    <div class="card"><h3>buffer ใหญ่ขึ้น</h3><p>จาก 48 เป็น 120 แถว จำนวนรอบที่ต้องวาดต่อเฟรมลดจาก ~5 เหลือ ~2</p></div>
+    <div class="card"><h3>ลำแสงเบาลง</h3><p>สามเหลี่ยมจาก 27 เหลือ 18 ชิ้น และวาดใหม่เฉพาะพื้นที่ที่ลำแสงผ่าน</p></div>
+    <div class="card"><h3>ไม่ใช้ opacity ทั้งจอ</h3><p>การปรับความโปร่งใสของวงแหวนเต็มจอทำให้ fps ตกเหลือ 8 เปลี่ยนเป็นกระพริบติด/ดับแทน</p></div>
+  </div>
+  <div class="footer"><span>ความเร็ว</span><span>07</span></div>
+</section>
+
+<!-- 8. radar design -->
+<section class="slide">
+  <div class="kicker">ออกแบบหน้าปัด</div>
+  <h2>หน้าเรดาร์: อ่านเวลาได้ 3 ระดับ</h2>
+  <div class="grid2">
+    <svg viewBox="0 0 440 440" width="480" height="440" aria-label="radar face detail">
+      <circle cx="220" cy="220" r="214" fill="#020806" stroke="#2ed3ff" stroke-width="2"/>
+      <g fill="none" stroke="#2ed3ff" stroke-opacity=".25"><circle cx="220" cy="220" r="70"/><circle cx="220" cy="220" r="140"/><circle cx="220" cy="220" r="186" stroke-opacity=".5"/></g>
+      <path d="M220 220 L220 14 A206 206 0 0 1 366 74 Z" fill="#2ed3ff" fill-opacity=".18"/>
+      <line x1="220" y1="220" x2="366" y2="74" stroke="#2ed3ff" stroke-width="3"/>
+      <text x="220" y="246" text-anchor="middle" font-family="Prompt" font-weight="600" font-size="88" fill="#dff7ff">09:25</text>
+      <text x="220" y="164" text-anchor="middle" font-family="Prompt" font-size="24" fill="#2ed3ff">วันศุกร์</text>
+      <circle cx="40" cy="198" r="16" fill="#ff9a1f" stroke="#02090c" stroke-width="3"/>
+      <circle cx="61" cy="198" r="34" fill="none" stroke="#ff9a1f" stroke-opacity=".5" stroke-width="3"/>
+      <circle cx="40" cy="198" r="52" fill="none" stroke="#ff9a1f" stroke-opacity=".25" stroke-width="2"/>
+      <circle cx="329" cy="370" r="8" fill="#ff9a1f" stroke="#02090c" stroke-width="2"/>
+      <circle cx="329" cy="370" r="20" fill="none" stroke="#ff9a1f" stroke-opacity=".45" stroke-width="2"/>
+      <rect x="66" y="186" width="44" height="24" rx="8" fill="#02090c"/><text x="88" y="204" text-anchor="middle" font-family="Prompt" font-size="17" fill="#ff9a1f">ชม.</text>
+      <rect x="268" y="324" width="48" height="24" rx="8" fill="#02090c"/><text x="292" y="342" text-anchor="middle" font-family="Prompt" font-size="17" fill="#ff9a1f">นาที</text>
+    </svg>
+    <div class="col">
+      <div class="card"><h3>1 · ตัวเลขดิจิทัล</h3><p>Prompt SemiBold 130 px ตัวเลขทุกตัวกว้างเท่ากัน (tabular) เวลาตัวเลขเปลี่ยน นาฬิกาจึงไม่ขยับ</p></div>
+      <div class="card"><h3>2 · จุดบอกเวลา</h3><p><b>ชม.</b> 28 px สว่างวาบเป็นสีขาว + คลื่น 2 วงที่ขยายช้า<br><b>นาที</b> 14 px เด้งพร้อมคลื่นวงเล็กที่ขยายเร็ว และค่อย ๆ ขยับทุก 5 วินาที</p></div>
+      <div class="card"><h3>3 · ลำแสงกวาด = วินาที</h3><p>หมุนรอบละ 60 วินาที หางยาว 54° เมื่อกวาดผ่านจุดบอกเวลาจะเกิดเอฟเฟกต์ ping</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>ออกแบบหน้าปัด</span><span>08</span></div>
+</section>
+
+<!-- 9. thai -->
+<section class="slide">
+  <div class="kicker">ภาษาไทยบน LVGL</div>
+  <h2>ฟอนต์ Prompt และวรรณยุกต์ซ้อน</h2>
+  <div class="grid2">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><h3>ปัญหา</h3><p>LVGL ไม่มีระบบจัดตำแหน่งสระและวรรณยุกต์ไทย (shaping) วรรณยุกต์ที่ตามหลังสระบนจะทับกันจนมองไม่เห็น</p>
+        <p style="font-size:30px;margin:8px 0 0">ที่ → <span style="color:var(--danger)">ที</span> &nbsp; เริ่ม → <span style="color:var(--danger)">เริม</span> &nbsp; น้ำ → <span style="color:var(--danger)">นำ</span></p></div>
+      <div class="card"><h3>วิธีแก้</h3><ul>
+        <li><code>tools/ttf2lvgl.py</code> สร้างวรรณยุกต์ชุดยกสูงไว้ที่ <code>U+F700–F704</code></li>
+        <li><code>thai_label_set_text()</code> สลับไปใช้ตัวยกสูงเมื่อวรรณยุกต์ตามหลังสระบน หรืออยู่หน้าสระอำ</li></ul>
+        <p style="font-size:30px;margin:8px 0 0;color:var(--accent)">ที่ · เริ่ม · เพื่อ · ต่ำ · น้ำ ✓</p></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="card"><h3>ตัวแปลงฟอนต์ที่เขียนเอง</h3><ul>
+        <li>ระบบไม่อนุญาตให้รัน <code>lv_font_conv</code> ที่ดาวน์โหลดจาก npm</li>
+        <li>เขียนตัวแปลงเองด้วย Pillow ได้ฟอนต์ 4 bpp</li>
+        <li>วัดขอบเขตตัวอักษรจาก<b>พิกเซลที่วาดจริง</b> เพราะ <code>getbbox()</code> ของ Pillow ให้ค่าที่ผิดกับสระไทย</li></ul></div>
+      <div class="card"><h3>ชุดฟอนต์</h3>
+        <span class="tag on">นาฬิกา 130 px</span><span class="tag">56 px</span><span class="tag">28 px</span><span class="tag">20 px</span><span class="tag">16 px</span>
+        <p class="muted" style="font-size:16px;margin-top:6px">Prompt © Cadson Demak · SIL Open Font License 1.1 · ใช้ flash เพิ่มประมาณ 120 KB</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>ภาษาไทย</span><span>09</span></div>
+</section>
+
+<!-- 10. day colours -->
+<section class="slide">
+  <div class="kicker">สีประจำวันแบบไทย</div>
+  <h2>เปลี่ยนสีตามวัน พร้อมสีตัดกันของจุดบอกเวลา</h2>
+  <div class="days">
+    <div class="day" style="--c:#ff3b3b;--k:#00e5ff"><div class="dot"></div><div class="n">อาทิตย์</div><div class="s">แดง · ไซแอน</div></div>
+    <div class="day" style="--c:#ffd60a;--k:#d25cff"><div class="dot"></div><div class="n">จันทร์</div><div class="s">เหลือง · ไวโอเล็ต</div></div>
+    <div class="day" style="--c:#ff6ec7;--k:#9dff2e"><div class="dot"></div><div class="n">อังคาร</div><div class="s">ชมพู · มะนาว</div></div>
+    <div class="day" style="--c:#22ff7a;--k:#ff4fd8"><div class="dot"></div><div class="n">พุธ</div><div class="s">เขียว · แมเจนตา</div></div>
+    <div class="day" style="--c:#ff8a00;--k:#2ec8ff"><div class="dot"></div><div class="n">พฤหัสบดี</div><div class="s">ส้ม · ฟ้าคราม</div></div>
+    <div class="day" style="--c:#2ed3ff;--k:#ff9a1f"><div class="dot"></div><div class="n">ศุกร์</div><div class="s">ฟ้า · ส้ม</div></div>
+    <div class="day" style="--c:#b27bff;--k:#ffe14d"><div class="dot"></div><div class="n">เสาร์</div><div class="s">ม่วง · เหลือง</div></div>
+  </div>
+  <div class="grid3" style="margin-top:24px">
+    <div class="card"><h3>อัตโนมัติ</h3><p>อ่านวันจาก RTC และค่อย ๆ เปลี่ยนสีตอนเที่ยงคืนภายใน 0.6 วินาที</p></div>
+    <div class="card"><h3>แตะดูสีวันอื่น</h3><p>ถ้าไม่แตะต่อ 15 วินาที จะกลับเป็นสีของวันนี้</p></div>
+    <div class="card"><h3>ทุกส่วนเปลี่ยนพร้อมกัน</h3><p>วงเรดาร์ ลำแสง ตัวเลข ข้อความ และพื้นหลัง (ผสมสีจาง ๆ ราว 6%)</p></div>
+  </div>
+  <div class="footer"><span>สีประจำวัน · จุดเล็กมุมขวา = สีของจุดบอกเวลา</span><span>10</span></div>
+</section>
+
+<!-- 11. time -->
+<section class="slide">
+  <div class="kicker">เวลาและการแจ้งเตือน</div>
+  <h2>RTC, นาฬิกาปลุก และตีบอกเวลา</h2>
+  <div class="grid2">
+    <div class="col">
+      <div class="card"><h3>RTC บนคริสตัล LSE</h3><p>เวลาต่างจาก Mac เพียง <b>0.04 วินาที</b> หลังซิงก์ และ <code>tools/flash.py</code> ซิงก์เวลาให้อัตโนมัติทุกครั้งที่แฟลช</p></div>
+      <div class="card"><h3>Alarm A · นาฬิกาปลุก</h3><p>ปลุกทุกวัน ขึ้นหน้าจอสีแดง "ถึงเวลาแล้ว!" ปลุกบอร์ดจาก Stop 2 ได้ และจำค่าไว้ใน backup register</p></div>
+      <div class="card"><h3>Alarm B · ตีบอกเวลา</h3><p>ทุก HH:00:00 ขอบจอกระพริบ 10 วินาที และ LED3 กระพริบตาม (บอร์ดไม่มีลำโพง)</p></div>
+    </div>
+    <div class="col">
+      <div class="card" style="border-color:#5a1a1a"><h3 style="color:var(--danger)">บั๊ก 1 · เวลาย้อนหลังรีเซ็ต</h3><p>หลังรีเซ็ต <code>HAL_RTC_Init()</code> ข้ามขั้นตอนเริ่มต้นเมื่อปฏิทินถูกตั้งไว้แล้ว และยังไม่ได้รอ flag <b>RSF</b><br>แก้: เรียก <code>HAL_RTC_WaitForSynchro()</code> ก่อนอ่านเวลาครั้งแรก</p></div>
+      <div class="card" style="border-color:#5a1a1a"><h3 style="color:var(--danger)">บั๊ก 2 · ช้าลง 30 วินาทีทุกครั้งที่แฟลช</h3><p>โค้ดตั้งเวลาจาก build ทุกครั้งที่ RTC ช้ากว่าเวลาที่ build แต่การ build และแฟลชใช้เวลาประมาณ 30 วินาที<br>แก้: ตั้งใหม่จากเวลาที่ build ก็ต่อเมื่อ RTC ช้าเกิน <b>10 นาที</b></p></div>
+    </div>
+  </div>
+  <div class="footer"><span>เวลาและการแจ้งเตือน</span><span>11</span></div>
+</section>
+
+<!-- 12. power -->
+<section class="slide">
+  <div class="kicker">พลังงาน</div>
+  <h2>เปิดจอตลอด หรือหลับด้วย Stop 2</h2>
+  <div class="grid2">
+    <svg viewBox="0 0 520 330" width="540" height="330" font-family="Prompt" aria-label="power states">
+      <style>.st{fill:#07130f;stroke:#22ff7a;stroke-width:1.6}.sl{fill:#07130f;stroke:#2ed3ff;stroke-width:1.6}.tt{fill:#e6f4ee;font-size:20px}.ts{fill:#8fb3a5;font-size:14px}.aa{stroke:#8fb3a5;stroke-width:1.6;fill:none;marker-end:url(#ah2)}</style>
+      <defs><marker id="ah2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8fb3a5"/></marker></defs>
+      <rect x="10" y="110" width="200" height="110" rx="16" class="st"/><text x="110" y="158" text-anchor="middle" class="tt">ทำงาน</text><text x="110" y="184" text-anchor="middle" class="ts">จอ + GPU + CPU 160 MHz</text>
+      <rect x="310" y="110" width="200" height="110" rx="16" class="sl"/><text x="410" y="158" text-anchor="middle" class="tt">Stop 2</text><text x="410" y="184" text-anchor="middle" class="ts">ปิดจอ · RTC เดินต่อ</text>
+      <path d="M210 135 C 250 100, 270 100, 306 135" class="aa"/><text x="260" y="92" text-anchor="middle" class="ts">กดปุ่ม USER</text>
+      <path d="M310 195 C 270 235, 250 235, 214 195" class="aa"/><text x="260" y="262" text-anchor="middle" class="ts">แตะจอ · กดปุ่ม · Alarm A/B</text>
+    </svg>
+    <div class="col">
+      <div class="card"><h3>ALWAYS_ON = 1 (ค่าเริ่มต้น)</h3><p>จอไม่ดับเอง ถ้าตั้งเป็น 0 จะหลับเมื่อไม่ได้แตะจอ 60 วินาที</p></div>
+      <div class="card"><h3>หลังตื่น</h3><p>เรียก <code>SystemClock_Config()</code> แล้ว <code>BSP_LCD_Init()</code> ใหม่ (PLL3, DSI, LTDC) และวาดจอใหม่ทั้งหมด การแตะที่ใช้ปลุกจะไม่ถูกนับเป็นคลิก</p></div>
+      <div class="card"><h3>สิ่งที่ห้ามหลับระหว่างทำงาน</h3><p>นาฬิกาจับเวลาที่กำลังเดิน, หน้าจอแจ้งเตือนปลุก และช่วงตีบอกเวลา</p></div>
+    </div>
+  </div>
+  <div class="footer"><span>พลังงาน</span><span>12</span></div>
+</section>
+
+<!-- 13. workflow -->
+<section class="slide">
+  <div class="kicker">เครื่องมือ</div>
+  <h2>Build · แฟลช · ตรวจผล บน Mac (ไม่ต้องใช้ CubeIDE)</h2>
+  <div class="grid2">
+<div class="code"><span class="c"># 1) build แบบ NeoChrom GPU (-O2, ขนาน 8 งาน)</span>
+<span class="k">NEOCHROM=1</span> tools/build.sh /tmp/u5build
+
+<span class="c"># 2) แปลง .elf เป็น .bin</span>
+arm-none-eabi-objcopy -O binary \
+  /tmp/u5build/GPIO_IOToggle.elf build/GPIO_IOToggle.bin
+
+<span class="c"># 3) แฟลช + เก็บ log ตอนบูต + ซิงก์เวลา</span>
+python3 tools/flash.py build/GPIO_IOToggle.bin
+
+<span class="c"># 4) อ่าน UART / ตั้งเวลา / ทดสอบตีบอกเวลา</span>
+python3 tools/serial_read.py /dev/cu.usbmodem12403 10
+python3 tools/set_time.py</div>
+<div class="code"><span class="c">flashing build/GPIO_IOToggle.bin -> /Volumes/DIS_U5A9NJ</span>
+=== STM32U5A9J-DK: Hello from UART! ===
+SYSCLK = 160000000 Hz
+RTC holds 2026-11-06 09:00:22
+RTC running on LSE (32.768 kHz crystal)
+hourly chime on
+Touch init OK (0)
+LVGL 9.6.0 ready, renderer: NeoChrom GPU2D
+Temp sensor (STTS22H) init OK (0)
+colour of the day -> สีฟ้า · วันศุกร์
+2026-11-06 09:00:26  temp 35.6C  <span class="k">fps 26</span>
+<span class="c">time sync: T 2026-11-06 09:00:56 -> OK</span></div>
+  </div>
+  <div class="footer"><span>เครื่องมือ · tools/</span><span>13</span></div>
+</section>
+
+<!-- 14. lessons -->
+<section class="slide">
+  <div class="kicker">บทเรียน</div>
+  <h2>ปัญหาที่เจอ และวิธีแก้</h2>
+  <table>
+    <tr><th>ปัญหา</th><td><b>สาเหตุ → วิธีแก้</b></td></tr>
+    <tr><th>ภาพซ้ำแถวแรกทุกบรรทัด</th><td>บั๊ก <code>BSP_LCD_FillRGBRect</code> ของ ST → เขียน flush เอง</td></tr>
+    <tr><th>บอร์ดค้างตอนเปิดจอ</th><td>ไม่มี IRQ handler ของ LCD จึงไปติดที่ <code>Default_Handler</code> → เพิ่ม handler ให้ครบ</td></tr>
+    <tr><th>เวลาย้อน / ช้าลงหลังแฟลช</th><td>ไม่ได้รอ RSF และกฎตั้งเวลาจาก build เข้มเกินไป → รอ RSF + ตั้งใหม่เมื่อช้าเกิน 10 นาทีเท่านั้น</td></tr>
+    <tr><th>วรรณยุกต์หาย</th><td>LVGL ไม่มี shaping → สร้างวรรณยุกต์ยกสูง + แทนที่ในโค้ด</td></tr>
+    <tr><th>fps ตกตอนกระพริบ</th><td>opacity ของวัตถุเต็มจอทำให้ต้องวาดผ่าน layer → กระพริบแบบติด/ดับ</td></tr>
+    <tr><th>อ่าน UART บน macOS ไม่ได้</th><td>ค่า baud หายเมื่อปิดพอร์ต → ตั้ง termios ใน process เดียวกับที่อ่าน</td></tr>
+  </table>
+  <div class="footer"><span>บทเรียน</span><span>14</span></div>
+</section>
+
+<!-- 15. next -->
+<section class="slide">
+  <div class="kicker">ขั้นต่อไป</div>
+  <h2>แนวทางพัฒนาต่อ</h2>
+  <div class="grid3" style="flex:1">
+    <div class="card"><h3>เซนเซอร์ ToF</h3><p>ใช้ VL53L5CX ให้โบกมือเพื่อปลุกจอหรือเปลี่ยนหน้า และแสดงวัตถุจริงเป็นเป้าหมายบนเรดาร์</p></div>
+    <div class="card"><h3>ไร้สาย</h3><p>ต่อ ESP32 ผ่าน UART พร้อม level shifter 1.8↔3.3 V เพื่อดึงเวลา NTP และส่งค่าอุณหภูมิขึ้น MQTT</p></div>
+    <div class="card"><h3>อุณหภูมิแม่นขึ้น</h3><p>ชดเชยความร้อนจากตัวบอร์ด เพราะตอนนี้วัดได้สูงกว่าอุณหภูมิห้อง (~35 °C)</p></div>
+    <div class="card"><h3>ขอบจอที่ลื่นขึ้น</h3><p>แบ่งวงแหวนตีบอกเวลาเป็น 4 ส่วนโค้ด ให้วาดใหม่เฉพาะแถบขอบจอ</p></div>
+    <div class="card"><h3>โหมด AOD</h3><p>เมื่อไม่ได้แตะจอนาน ให้เหลือแค่ตัวเลขสีเข้ม อัปเดตทุก 1 นาที และลดภาระของ CPU/GPU</p></div>
+    <div class="card"><h3>ย้ายไปบอร์ดรุ่นใหม่</h3><p>รองรับ STM32U5G9J-DK1 ซึ่งเป็นรุ่นที่มาแทน โดยเปลี่ยน MCU, startup, linker script และไลบรารี NemaPVG</p></div>
+  </div>
+  <div class="footer"><span>github.com/apisake/STMicroelectronics-STM32U5A9J-DK</span><span>15</span></div>
+</section>
+
+</div></div>
+
+<div id="hint">← → / Space เพื่อเปลี่ยนสไลด์ · F = เต็มจอ · ปัดบนมือถือได้</div>
+<div id="nav"><button id="prev" aria-label="previous">‹</button><span id="count"></span><button id="next" aria-label="next">›</button></div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const deck = document.getElementById('deck');
+  let i = 0;
+
+  function fit() {
+    const s = Math.min(window.innerWidth / 1300, window.innerHeight / 740);
+    deck.style.transform = `translate(-50%, -50%) scale(${s})`;
+  }
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((el, k) => el.classList.toggle('active', k === i));
+    document.getElementById('count').textContent = `${i + 1} / ${slides.length}`;
+    document.getElementById('progress').style.width = `${((i + 1) / slides.length) * 100}%`;
+    try { history.replaceState(null, '', `#${i + 1}`); } catch (e) {}
+  }
+  document.getElementById('prev').onclick = () => show(i - 1);
+  document.getElementById('next').onclick = () => show(i + 1);
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen?.(); else document.exitFullscreen?.();
+    }
+  });
+  let tx = null;
+  document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) show(i + (dx < 0 ? 1 : -1));
+    tx = null;
+  });
+  window.addEventListener('resize', fit);
+  fit();
+  show((parseInt(location.hash.slice(1), 10) || 1) - 1);
+</script>
+</body>
+</html>

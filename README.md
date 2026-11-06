@@ -15,6 +15,8 @@
 > ชื่อ repository ใส่ยี่ห้อและรุ่นบอร์ด (`STMicroelectronics-STM32U5A9J-DK`) เพื่อแยกออกจากโปรเจกต์ของบอร์ดรุ่นอื่น
 >
 > ประวัติการแก้ไขและเพิ่มเติมทั้งหมดดูได้ที่ [CHANGELOG.md](CHANGELOG.md)
+>
+> สไลด์อธิบายโปรเจกต์ (HTML, 15 หน้า): [docs/slides.html](docs/slides.html) ดาวน์โหลดแล้วเปิดในเบราว์เซอร์ ใช้ปุ่ม ← → เปลี่ยนหน้า กด F เพื่อเต็มจอ
 
 โปรเจกต์ STM32CubeIDE ดัดแปลงจากตัวอย่าง `GPIO_IOToggle` ของ [STM32CubeU5](https://github.com/STMicroelectronics/STM32CubeU5)
 ตอนนี้โปรแกรมเป็น**นาฬิกาเรดาร์ Sci-Fi ภาษาไทยบนจอกลม 480×480** เขียนด้วย **LVGL v9.6.0** และใช้ NeoChrom GPU
