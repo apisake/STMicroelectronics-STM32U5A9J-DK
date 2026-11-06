@@ -13,6 +13,8 @@
 | **สถานะ** | ST ประกาศ **OBSOLETE** แล้ว รุ่นที่แนะนำให้ใช้แทนคือ [STM32U5G9J-DK1](https://www.st.com/en/evaluation-tools/stm32u5g9j-dk1.html) |
 
 > ชื่อ repository ใส่ยี่ห้อและรุ่นบอร์ด (`STMicroelectronics-STM32U5A9J-DK`) เพื่อแยกออกจากโปรเจกต์ของบอร์ดรุ่นอื่น
+>
+> ประวัติการแก้ไขและเพิ่มเติมทั้งหมดดูได้ที่ [CHANGELOG.md](CHANGELOG.md)
 
 โปรเจกต์ STM32CubeIDE ดัดแปลงจากตัวอย่าง `GPIO_IOToggle` ของ [STM32CubeU5](https://github.com/STMicroelectronics/STM32CubeU5)
 ตอนนี้โปรแกรมเป็น**นาฬิกาเรดาร์ Sci-Fi ภาษาไทยบนจอกลม 480×480** เขียนด้วย **LVGL v9.6.0** และใช้ NeoChrom GPU
