@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>System power states</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Prompt:wght@400;500;600&family=Noto+Serif+Thai:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --color-paper: #050d0a; --color-ink: #e6f4ee; --color-muted: #8fb3a5; }
+  body { font-family: 'Geist','Prompt',system-ui,sans-serif; background: var(--color-paper); color: var(--color-ink);
+         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+  .frame { max-width: 1200px; width: 100%; }
+  .diagram-container { width: 100%; overflow-x: auto; }
+  .eyebrow { font-family: 'Geist Mono',ui-monospace,monospace; font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+             text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+  h1 { font-family: 'Instrument Serif','Noto Serif Thai',serif; font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+       letter-spacing: -0.02em; line-height: 1.25; color: var(--color-ink); margin-bottom: 1.5rem; }
+  svg { width: 100%; min-width: 960px; display: block; }
+  @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="frame">
+<p class="eyebrow">State machine · ระบบ</p>
+<h1>ระบบ: บูต · ทำงาน · หลับ (Stop 2)</h1>
+<div class="diagram-container">
+<svg viewBox="0 0 960 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fsm-system-title fsm-system-desc">
+<title id="fsm-system-title">System power states</title>
+<desc id="fsm-system-desc">State machine of the firmware: boot, running, Stop 2 sleep, waking and the fault state.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8fb3a5"/></marker>
+<marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22ff7a"/></marker>
+<marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2ed3ff"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#050d0a"/>
+<!-- transitions first, then labels, then nodes -->
+<path d="M 58 196 L 96 196" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 272 196 L 380 196" fill="none" stroke="#22ff7a" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+<path d="M 556 196 L 676 196" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 764 232 L 764 356 A 8 8 0 0 1 756 364 L 704 364" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 528 364 L 476 364 A 8 8 0 0 1 468 356 L 468 232" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 184 232 L 184 328" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<rect x="302" y="176" width="48" height="12" rx="2" fill="#050d0a"/>
+<text x="326" y="185" fill="#22ff7a" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">INIT OK</text>
+<rect x="576" y="176" width="80" height="12" rx="2" fill="#050d0a"/>
+<text x="616" y="185" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">BUTTON / IDLE</text>
+<rect x="772" y="290" width="76" height="12" rx="2" fill="#050d0a"/>
+<text x="810" y="299" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">EXTI / ALARM</text>
+<rect x="412" y="290" width="48" height="12" rx="2" fill="#050d0a"/>
+<text x="436" y="299" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">RE-INIT</text>
+<rect x="192" y="274" width="60" height="12" rx="2" fill="#050d0a"/>
+<text x="222" y="283" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">INIT FAIL</text>
+<circle cx="52" cy="196" r="6" fill="#e6f4ee"/>
+<rect x="96" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="96" y="160" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="104" y="168" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="122" y="177" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="184" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Boot</text>
+<text x="184" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">เริ่มต้นฮาร์ดแวร์ + UI</text>
+<rect x="380" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="380" y="160" width="176" height="72" rx="8" fill="rgba(34,255,122,0.10)" stroke="#22ff7a" stroke-width="1"/>
+<rect x="388" y="168" width="36" height="12" rx="2" fill="transparent" stroke="#22ff7a" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="406" y="177" fill="#22ff7a" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="468" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Running</text>
+<text x="468" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">จอเปิด · ลูปหลัก ~30 fps</text>
+<rect x="676" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="676" y="160" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="684" y="168" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="702" y="177" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="764" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Sleep</text>
+<text x="764" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">Stop 2 · จอดับ · RTC เดิน</text>
+<rect x="528" y="328" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="528" y="328" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="536" y="336" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="554" y="345" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="616" y="370" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Waking</text>
+<text x="616" y="388" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">คืนสัญญาณนาฬิกา + จอ</text>
+<rect x="96" y="328" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="96" y="328" width="176" height="72" rx="8" fill="rgba(230,244,238,0.02)" stroke="rgba(230,244,238,0.30)" stroke-width="1" stroke-dasharray="4,3"/>
+<rect x="104" y="336" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="122" y="345" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="184" y="370" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Fault</text>
+<text x="184" y="388" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">Error_Handler() วนค้าง</text>
+<line x1="32" y1="456" x2="928" y2="456" stroke="rgba(230,244,238,0.12)" stroke-width="0.8"/>
+<text x="32" y="476" fill="#8fb3a5" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em">LEGEND</text>
+<circle cx="130" cy="472" r="5" fill="#e6f4ee"/>
+<text x="148" y="476" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เริ่ม</text>
+<rect x="196" y="466" width="20" height="12" rx="3" fill="rgba(34,255,122,0.10)" stroke="#22ff7a"/>
+<text x="224" y="476" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">สถานะหลัก</text>
+<rect x="304" y="466" width="20" height="12" rx="3" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="332" y="476" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">สถานะ</text>
+<rect x="392" y="466" width="20" height="12" rx="3" fill="none" stroke="rgba(230,244,238,0.30)" stroke-dasharray="4,3"/>
+<text x="420" y="476" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">ผิดพลาด</text>
+<line x1="488" y1="472" x2="508" y2="472" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<text x="516" y="476" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เปลี่ยนสถานะ</text>
+</svg>
+</div>
+</div>
+</body>
+</html>

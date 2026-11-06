@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RTC boot decision</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Prompt:wght@400;500;600&family=Noto+Serif+Thai:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --color-paper: #050d0a; --color-ink: #e6f4ee; --color-muted: #8fb3a5; }
+  body { font-family: 'Geist','Prompt',system-ui,sans-serif; background: var(--color-paper); color: var(--color-ink);
+         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+  .frame { max-width: 1200px; width: 100%; }
+  .diagram-container { width: 100%; overflow-x: auto; }
+  .eyebrow { font-family: 'Geist Mono',ui-monospace,monospace; font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+             text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+  h1 { font-family: 'Instrument Serif','Noto Serif Thai',serif; font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+       letter-spacing: -0.02em; line-height: 1.25; color: var(--color-ink); margin-bottom: 1.5rem; }
+  svg { width: 100%; min-width: 960px; display: block; }
+  @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="frame">
+<p class="eyebrow">Flowchart · RTC</p>
+<h1>ตั้งเวลา RTC ตอนบูต: เก็บไว้หรือตั้งใหม่</h1>
+<div class="diagram-container">
+<svg viewBox="0 0 960 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fsm-rtc-boot-title fsm-rtc-boot-desc">
+<title id="fsm-rtc-boot-title">RTC boot decision</title>
+<desc id="fsm-rtc-boot-desc">Flowchart of how the firmware decides at boot whether to keep the RTC time or set it from the build time.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8fb3a5"/></marker>
+<marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22ff7a"/></marker>
+<marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2ed3ff"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#050d0a"/>
+<!-- transitions first, then labels, then nodes -->
+<path d="M 360 72 L 360 104" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 360 152 L 360 184" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 360 232 L 360 260" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 360 340 L 360 400" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 424 300 L 536 300" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 664 300 L 744 300" fill="none" stroke="#22ff7a" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+<path d="M 600 340 L 600 416 A 8 8 0 0 1 592 424 L 440 424" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 360 448 L 360 480 A 8 8 0 0 0 368 488 L 596 488" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 824 324 L 824 480 A 8 8 0 0 1 816 488 L 604 488" fill="none" stroke="#22ff7a" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+<path d="M 600 492 L 600 512" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 600 560 L 600 592" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="368" y="364" width="20" height="12" rx="2" fill="#050d0a"/>
+<text x="378" y="373" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+<rect x="466" y="280" width="28" height="12" rx="2" fill="#050d0a"/>
+<text x="480" y="289" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">YES</text>
+<rect x="690" y="280" width="28" height="12" rx="2" fill="#050d0a"/>
+<text x="704" y="289" fill="#22ff7a" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">YES</text>
+<rect x="608" y="376" width="20" height="12" rx="2" fill="#050d0a"/>
+<text x="618" y="385" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">NO</text>
+<rect x="300" y="40" width="120" height="32" rx="16" fill="#050d0a"/>
+<rect x="300" y="40" width="120" height="32" rx="16" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="360" y="61" fill="#e6f4ee" font-size="13" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">rtc_clock_init</text>
+<rect x="280" y="104" width="160" height="48" rx="6" fill="#050d0a"/>
+<rect x="280" y="104" width="160" height="48" rx="6" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="360" y="126" fill="#e6f4ee" font-size="13" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Start LSE</text>
+<text x="360" y="142" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">ไม่ติดใน 2 s → ใช้ LSI</text>
+<rect x="280" y="184" width="160" height="48" rx="6" fill="#050d0a"/>
+<rect x="280" y="184" width="160" height="48" rx="6" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="360" y="206" fill="#e6f4ee" font-size="13" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Init + RSF sync</text>
+<text x="360" y="222" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">HAL_RTC_WaitForSynchro</text>
+<polygon points="360,260 424,300 360,340 296,300" fill="#050d0a"/>
+<polygon points="360,260 424,300 360,340 296,300" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="360" y="298" fill="#e6f4ee" font-size="12" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Configured?</text>
+<text x="360" y="314" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">DR0 = magic</text>
+<polygon points="600,260 664,300 600,340 536,300" fill="#050d0a"/>
+<polygon points="600,260 664,300 600,340 536,300" fill="rgba(34,255,122,0.10)" stroke="#22ff7a" stroke-width="1"/>
+<text x="600" y="298" fill="#e6f4ee" font-size="12" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">≤ 10 min behind</text>
+<text x="600" y="314" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">เวลาที่ build</text>
+<rect x="280" y="400" width="160" height="48" rx="6" fill="#050d0a"/>
+<rect x="280" y="400" width="160" height="48" rx="6" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="360" y="422" fill="#e6f4ee" font-size="13" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Set from build</text>
+<text x="360" y="438" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">__DATE__ __TIME__</text>
+<rect x="744" y="276" width="160" height="48" rx="6" fill="#050d0a"/>
+<rect x="744" y="276" width="160" height="48" rx="6" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="824" y="298" fill="#e6f4ee" font-size="13" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Keep RTC time</text>
+<text x="824" y="314" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">เวลาเดิมถูกต้อง</text>
+<circle cx="600" cy="488" r="4" fill="#e6f4ee"/>
+<rect x="520" y="512" width="160" height="48" rx="6" fill="#050d0a"/>
+<rect x="520" y="512" width="160" height="48" rx="6" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="600" y="534" fill="#e6f4ee" font-size="13" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Restore alarms</text>
+<text x="600" y="550" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">Alarm A (DR3) · B (DR4)</text>
+<rect x="552" y="592" width="96" height="32" rx="16" fill="#050d0a"/>
+<rect x="552" y="592" width="96" height="32" rx="16" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<text x="600" y="613" fill="#e6f4ee" font-size="13" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">RTC ready</text>
+<text x="40" y="600" fill="#8fb3a5" font-size="14" font-style="italic" font-family="'Instrument Serif','Noto Serif Thai',serif" text-anchor="start">แก้บั๊ก: เดิมตั้งใหม่ทุกครั้งที่ช้ากว่า build</text>
+<line x1="32" y1="656" x2="928" y2="656" stroke="rgba(230,244,238,0.12)" stroke-width="0.8"/>
+<text x="32" y="676" fill="#8fb3a5" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em">LEGEND</text>
+<rect x="120" y="666" width="20" height="12" rx="6" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="148" y="676" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เริ่ม / จบ</text>
+<rect x="228" y="666" width="20" height="12" rx="3" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="256" y="676" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">ขั้นตอน</text>
+<polygon points="326,664 336,672 326,680 316,672" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="344" y="676" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">ตัดสินใจ</text>
+<rect x="412" y="666" width="20" height="12" rx="3" fill="rgba(34,255,122,0.10)" stroke="#22ff7a"/>
+<text x="440" y="676" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เกณฑ์ 10 นาที</text>
+</svg>
+</div>
+</div>
+</body>
+</html>

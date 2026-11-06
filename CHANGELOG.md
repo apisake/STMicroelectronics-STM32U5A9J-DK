@@ -8,6 +8,28 @@
 
 ---
 
+## [1.3.0] - 2026-11-06 — วาดแผนภาพ FSM ใหม่ด้วย skill Diagram Design
+
+### เพิ่ม
+- `docs/diagrams/fsm-*.html` + `.svg` จำนวน 7 ภาพ วาดตามแนวทางของ skill [Diagram Design](https://github.com/cathrynlavery/diagram-design) (Cathryn Lavery)
+  - ภาพที่วาด: ระบบ, การแจ้งเตือน, สีธีม, จับเวลา, เป้าหมายบนเรดาร์, ทัชสกรีน, การตั้งเวลา RTC
+  - กฎของ skill ที่ใช้:
+    - ตำแหน่งทุกจุดลงตารางทีละ 4 px
+    - เส้นเชื่อมหักมุมฉากและมนมุม r=8
+    - ป้ายบนลูกศรมีพื้นหลังปิด และเว้นห่างจากเส้น 8 px
+    - ไม่เกิน 9 โหนดต่อภาพ และใช้สีเน้นไม่เกิน 2 จุด
+    - มี `<title>`/`<desc>` สำหรับ accessibility
+  - ผ่าน `self_check.py` ของ skill ครบทุกภาพ
+- `tools/fsm_diagrams.py`: สคริปต์สร้างแผนภาพทั้งหมด (export SVG ด้วย `scripts/export_svg.py` ของ skill)
+- profile `radar-thai` ของ skill (`~/.diagram-design/profiles/`): พื้นเรดาร์เข้ม, สีเน้นเขียวเรดาร์, ลิงก์สีฟ้า, ข้อความไทยใช้ Prompt, หัวเรื่องใช้ Noto Serif Thai ค่าความต่างสีผ่านเกณฑ์ 4.5:1 ทุกสีในโหมดมืด
+
+### เปลี่ยน
+- `docs/state_machine.md`: แทนแผนภาพ Mermaid ทั้ง 11 ภาพด้วยภาพ SVG ชุดใหม่
+  - FSM ตัวจัดเวลางาน, หน้าจอ และ UART เปลี่ยนเป็นตาราง ตามแนวทางของ skill ที่ว่าถ้าตารางสื่อได้เท่ากันให้ใช้ตาราง
+  - ขั้นตอนย่อยของ BOOT และ WAKING เปลี่ยนเป็นรายการลำดับขั้น
+
+---
+
 ## [1.2.0] - 2026-11-06 — Finite State Machine
 
 ### เพิ่ม

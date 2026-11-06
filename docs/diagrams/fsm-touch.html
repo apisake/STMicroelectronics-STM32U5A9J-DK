@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Touch input</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Prompt:wght@400;500;600&family=Noto+Serif+Thai:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --color-paper: #050d0a; --color-ink: #e6f4ee; --color-muted: #8fb3a5; }
+  body { font-family: 'Geist','Prompt',system-ui,sans-serif; background: var(--color-paper); color: var(--color-ink);
+         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+  .frame { max-width: 1200px; width: 100%; }
+  .diagram-container { width: 100%; overflow-x: auto; }
+  .eyebrow { font-family: 'Geist Mono',ui-monospace,monospace; font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+             text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+  h1 { font-family: 'Instrument Serif','Noto Serif Thai',serif; font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+       letter-spacing: -0.02em; line-height: 1.25; color: var(--color-ink); margin-bottom: 1.5rem; }
+  svg { width: 100%; min-width: 960px; display: block; }
+  @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="frame">
+<p class="eyebrow">State machine · ทัชสกรีน</p>
+<h1>ทัชสกรีน และการกันคลิกหลังตื่น</h1>
+<div class="diagram-container">
+<svg viewBox="0 0 960 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fsm-touch-title fsm-touch-desc">
+<title id="fsm-touch-title">Touch input</title>
+<desc id="fsm-touch-desc">State machine of the polled touch input, including the blocked state that ignores the finger used to wake the board.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8fb3a5"/></marker>
+<marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22ff7a"/></marker>
+<marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2ed3ff"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#050d0a"/>
+<!-- transitions first, then labels, then nodes -->
+<path d="M 480 110 L 480 160" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 568 184 L 688 184" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 688 208 L 568 208" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 392 184 L 272 184" fill="none" stroke="#22ff7a" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+<path d="M 272 208 L 392 208" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<path d="M 156 160 C 156 112, 212 112, 212 160" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="610" y="164" width="36" height="12" rx="2" fill="#050d0a"/>
+<text x="628" y="173" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">TOUCH</text>
+<rect x="612" y="216" width="32" height="12" rx="2" fill="#050d0a"/>
+<text x="628" y="225" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">LIFT</text>
+<rect x="316" y="164" width="32" height="12" rx="2" fill="#050d0a"/>
+<text x="332" y="173" fill="#22ff7a" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">WAKE</text>
+<rect x="316" y="216" width="32" height="12" rx="2" fill="#050d0a"/>
+<text x="332" y="225" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">LIFT</text>
+<rect x="152" y="104" width="64" height="12" rx="2" fill="#050d0a"/>
+<text x="184" y="113" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">STILL HELD</text>
+<circle cx="480" cy="104" r="6" fill="#e6f4ee"/>
+<rect x="392" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="392" y="160" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="400" y="168" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="418" y="177" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="480" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Released</text>
+<text x="480" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">ไม่มีการแตะ</text>
+<rect x="688" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="688" y="160" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="696" y="168" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="714" y="177" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="776" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Pressed</text>
+<text x="776" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">พิกัด 479−x, 479−y</text>
+<rect x="96" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="96" y="160" width="176" height="72" rx="8" fill="rgba(34,255,122,0.10)" stroke="#22ff7a" stroke-width="1"/>
+<rect x="104" y="168" width="36" height="12" rx="2" fill="transparent" stroke="#22ff7a" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="122" y="177" fill="#22ff7a" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="184" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Blocked</text>
+<text x="184" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">นิ้วที่ใช้ปลุก ≠ คลิก</text>
+<line x1="32" y1="336" x2="928" y2="336" stroke="rgba(230,244,238,0.12)" stroke-width="0.8"/>
+<text x="32" y="356" fill="#8fb3a5" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em">LEGEND</text>
+<circle cx="130" cy="352" r="5" fill="#e6f4ee"/>
+<text x="148" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เริ่ม</text>
+<rect x="196" y="346" width="20" height="12" rx="3" fill="rgba(34,255,122,0.10)" stroke="#22ff7a"/>
+<text x="224" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">หลังตื่นจาก Stop 2</text>
+<rect x="348" y="346" width="20" height="12" rx="3" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="376" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">สถานะ</text>
+<line x1="436" y1="352" x2="456" y2="352" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<text x="464" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">ยกนิ้ว</text>
+</svg>
+</div>
+</div>
+</body>
+</html>

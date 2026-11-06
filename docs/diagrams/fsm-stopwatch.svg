@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fsm-stopwatch-title fsm-stopwatch-desc" id="fsm-stopwatch-root">
+<title id="fsm-stopwatch-title">Stopwatch</title>
+<desc id="fsm-stopwatch-desc">State machine of the stopwatch page: idle, running and paused with start, stop and reset.</desc>
+<defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #fsm-stopwatch-root { --color-paper: #050d0a; --color-ink: #e6f4ee; --color-muted: #8fb3a5; }
+      #fsm-stopwatch-root { font-family: 'Geist','Prompt',system-ui,sans-serif; color: var(--color-ink); }
+      #fsm-stopwatch-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#fsm-stopwatch-root .diagram-container { overflow-x: visible; }
+}</style>
+<marker id="fsm-stopwatch-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8fb3a5"/></marker>
+<marker id="fsm-stopwatch-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22ff7a"/></marker>
+<marker id="fsm-stopwatch-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2ed3ff"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#050d0a"/>
+<!-- transitions first, then labels, then nodes -->
+<path d="M 58 196 L 96 196" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#fsm-stopwatch-arrow)"/>
+<path d="M 272 196 L 392 196" fill="none" stroke="#22ff7a" stroke-width="1.4" marker-end="url(#fsm-stopwatch-arrow-accent)"/>
+<path d="M 568 184 L 688 184" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#fsm-stopwatch-arrow)"/>
+<path d="M 688 208 L 568 208" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#fsm-stopwatch-arrow)"/>
+<path d="M 776 232 L 776 288 A 8 8 0 0 1 768 296 L 192 296 A 8 8 0 0 1 184 288 L 184 232" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#fsm-stopwatch-arrow)"/>
+<path d="M 452 160 C 452 112, 508 112, 508 160" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#fsm-stopwatch-arrow)"/>
+<rect x="314" y="176" width="36" height="12" rx="2" fill="#050d0a"/>
+<text x="332" y="185" fill="#22ff7a" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">START</text>
+<rect x="612" y="164" width="32" height="12" rx="2" fill="#050d0a"/>
+<text x="628" y="173" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">STOP</text>
+<rect x="610" y="216" width="36" height="12" rx="2" fill="#050d0a"/>
+<text x="628" y="225" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">START</text>
+<rect x="462" y="304" width="36" height="12" rx="2" fill="#050d0a"/>
+<text x="480" y="313" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">RESET</text>
+<rect x="462" y="104" width="36" height="12" rx="2" fill="#050d0a"/>
+<text x="480" y="113" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">RESET</text>
+<circle cx="52" cy="196" r="6" fill="#e6f4ee"/>
+<rect x="96" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="96" y="160" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="104" y="168" width="36" height="12" rx="2" fill="none" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="122" y="177" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="184" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Idle</text>
+<text x="184" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">00:00.00</text>
+<rect x="392" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="392" y="160" width="176" height="72" rx="8" fill="#22ff7a" stroke="#22ff7a" stroke-width="1" fill-opacity="0.10"/>
+<rect x="400" y="168" width="36" height="12" rx="2" fill="none" stroke="#22ff7a" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="418" y="177" fill="#22ff7a" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="480" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Running</text>
+<text x="480" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">นับเวลา · ห้ามหลับ</text>
+<rect x="688" y="160" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="688" y="160" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="696" y="168" width="36" height="12" rx="2" fill="none" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="714" y="177" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="776" y="202" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Paused</text>
+<text x="776" y="220" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">เก็บเวลาที่สะสมไว้</text>
+<line x1="32" y1="336" x2="928" y2="336" stroke="rgba(230,244,238,0.12)" stroke-width="0.8"/>
+<text x="32" y="356" fill="#8fb3a5" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em">LEGEND</text>
+<circle cx="130" cy="352" r="5" fill="#e6f4ee"/>
+<text x="148" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เริ่ม</text>
+<rect x="196" y="346" width="20" height="12" rx="3" fill="#22ff7a" stroke="#22ff7a" fill-opacity="0.10"/>
+<text x="224" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">กำลังนับ</text>
+<rect x="292" y="346" width="20" height="12" rx="3" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="320" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">สถานะ</text>
+<line x1="380" y1="352" x2="400" y2="352" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#fsm-stopwatch-arrow)"/>
+<text x="408" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">รีเซ็ตกลับ</text>
+</svg>

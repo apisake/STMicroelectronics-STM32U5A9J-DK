@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On-screen alerts</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Prompt:wght@400;500;600&family=Noto+Serif+Thai:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --color-paper: #050d0a; --color-ink: #e6f4ee; --color-muted: #8fb3a5; }
+  body { font-family: 'Geist','Prompt',system-ui,sans-serif; background: var(--color-paper); color: var(--color-ink);
+         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+  .frame { max-width: 1200px; width: 100%; }
+  .diagram-container { width: 100%; overflow-x: auto; }
+  .eyebrow { font-family: 'Geist Mono',ui-monospace,monospace; font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+             text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+  h1 { font-family: 'Instrument Serif','Noto Serif Thai',serif; font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+       letter-spacing: -0.02em; line-height: 1.25; color: var(--color-ink); margin-bottom: 1.5rem; }
+  svg { width: 100%; min-width: 960px; display: block; }
+  @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="frame">
+<p class="eyebrow">State machine · การแจ้งเตือนบนจอ</p>
+<h1>ตีบอกเวลา และนาฬิกาปลุก</h1>
+<div class="diagram-container">
+<svg viewBox="0 0 960 600" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fsm-alerts-title fsm-alerts-desc">
+<title id="fsm-alerts-title">On-screen alerts</title>
+<desc id="fsm-alerts-desc">State machine of the hourly chime and daily alarm overlays and how they interact.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8fb3a5"/></marker>
+<marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22ff7a"/></marker>
+<marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2ed3ff"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#050d0a"/>
+<!-- transitions first, then labels, then nodes -->
+<path d="M 58 280 L 96 280" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 152 244 L 152 136 A 8 8 0 0 1 160 128 L 420 128" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 420 152 L 220 152 A 8 8 0 0 0 212 160 L 212 244" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<path d="M 152 316 L 152 424 A 8 8 0 0 0 160 432 L 420 432" fill="none" stroke="#22ff7a" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+<path d="M 420 408 L 220 408 A 8 8 0 0 1 212 400 L 212 316" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<path d="M 596 128 L 768 128 A 8 8 0 0 1 776 136 L 776 244" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 716 268 L 544 268 A 8 8 0 0 1 536 260 L 536 176" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<path d="M 804 316 L 804 412 A 8 8 0 0 1 796 420 L 596 420" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="262" y="108" width="48" height="12" rx="2" fill="#050d0a"/>
+<text x="286" y="117" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">ALARM B</text>
+<rect x="284" y="160" width="64" height="12" rx="2" fill="#050d0a"/>
+<text x="316" y="169" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">10 S / TAP</text>
+<rect x="262" y="440" width="48" height="12" rx="2" fill="#050d0a"/>
+<text x="286" y="449" fill="#22ff7a" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">ALARM A</text>
+<rect x="284" y="388" width="64" height="12" rx="2" fill="#050d0a"/>
+<text x="316" y="397" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">TAP / 60 S</text>
+<rect x="662" y="108" width="48" height="12" rx="2" fill="#050d0a"/>
+<text x="686" y="117" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">ALARM A</text>
+<rect x="612" y="276" width="28" height="12" rx="2" fill="#050d0a"/>
+<text x="626" y="285" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">TAP</text>
+<rect x="812" y="362" width="64" height="12" rx="2" fill="#050d0a"/>
+<text x="844" y="371" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">CHIME 10 S</text>
+<circle cx="52" cy="280" r="6" fill="#e6f4ee"/>
+<rect x="96" y="244" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="96" y="244" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="104" y="252" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="122" y="261" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="184" y="286" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Normal</text>
+<text x="184" y="304" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">ไม่มีการแจ้งเตือน</text>
+<rect x="420" y="104" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="420" y="104" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="428" y="112" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="446" y="121" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="508" y="146" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Chime</text>
+<text x="508" y="164" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">ขอบจอกระพริบ 10 วินาที</text>
+<rect x="420" y="384" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="420" y="384" width="176" height="72" rx="8" fill="rgba(34,255,122,0.10)" stroke="#22ff7a" stroke-width="1"/>
+<rect x="428" y="392" width="36" height="12" rx="2" fill="transparent" stroke="#22ff7a" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="446" y="401" fill="#22ff7a" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="508" y="426" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Alarm</text>
+<text x="508" y="444" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">ถึงเวลาแล้ว! · LED3</text>
+<rect x="716" y="244" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="716" y="244" width="176" height="72" rx="8" fill="rgba(230,244,238,0.02)" stroke="rgba(230,244,238,0.30)" stroke-width="1" stroke-dasharray="4,3"/>
+<rect x="724" y="252" width="44" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="746" y="261" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">OVERLAP</text>
+<text x="804" y="286" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Chime + Alarm</text>
+<text x="804" y="304" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">กระพริบต่อใต้หน้าจอปลุก</text>
+<text x="612" y="500" fill="#8fb3a5" font-size="14" font-style="italic" font-family="'Instrument Serif','Noto Serif Thai',serif" text-anchor="start">Alarm B ระหว่างปลุก: ไม่ตีบอกเวลา</text>
+<line x1="32" y1="536" x2="928" y2="536" stroke="rgba(230,244,238,0.12)" stroke-width="0.8"/>
+<text x="32" y="556" fill="#8fb3a5" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em">LEGEND</text>
+<circle cx="130" cy="552" r="5" fill="#e6f4ee"/>
+<text x="148" y="556" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เริ่ม</text>
+<rect x="196" y="546" width="20" height="12" rx="3" fill="rgba(34,255,122,0.10)" stroke="#22ff7a"/>
+<text x="224" y="556" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">สำคัญที่สุด</text>
+<rect x="300" y="546" width="20" height="12" rx="3" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="328" y="556" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">สถานะ</text>
+<rect x="388" y="546" width="20" height="12" rx="3" fill="none" stroke="rgba(230,244,238,0.30)" stroke-dasharray="4,3"/>
+<text x="416" y="556" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">ซ้อนกันชั่วคราว</text>
+<line x1="516" y1="552" x2="536" y2="552" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<text x="544" y="556" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">กลับ</text>
+</svg>
+</div>
+</div>
+</body>
+</html>

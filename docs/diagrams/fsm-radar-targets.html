@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar targets</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&family=Prompt:wght@400;500;600&family=Noto+Serif+Thai:wght@400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --color-paper: #050d0a; --color-ink: #e6f4ee; --color-muted: #8fb3a5; }
+  body { font-family: 'Geist','Prompt',system-ui,sans-serif; background: var(--color-paper); color: var(--color-ink);
+         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; }
+  .frame { max-width: 1200px; width: 100%; }
+  .diagram-container { width: 100%; overflow-x: auto; }
+  .eyebrow { font-family: 'Geist Mono',ui-monospace,monospace; font-size: 0.66rem; font-weight: 500; letter-spacing: 0.18em;
+             text-transform: uppercase; color: var(--color-muted); margin-bottom: 0.5rem; }
+  h1 { font-family: 'Instrument Serif','Noto Serif Thai',serif; font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem); font-weight: 400;
+       letter-spacing: -0.02em; line-height: 1.25; color: var(--color-ink); margin-bottom: 1.5rem; }
+  svg { width: 100%; min-width: 960px; display: block; }
+  @media print { .diagram-container { overflow-x: visible; } svg { min-width: 0; } }
+</style>
+</head>
+<body>
+<div class="frame">
+<p class="eyebrow">State machine · เป้าหมายบนเรดาร์</p>
+<h1>จุดบอกเวลา และเป้าหมายประกอบฉาก</h1>
+<div class="diagram-container">
+<svg viewBox="0 0 960 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fsm-radar-targets-title fsm-radar-targets-desc">
+<title id="fsm-radar-targets-title">Radar targets</title>
+<desc id="fsm-radar-targets-desc">Two small state machines: the hour and minute marks pinging when the sweep passes, and the ambient contacts that fade and relocate.</desc>
+<defs>
+<marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8fb3a5"/></marker>
+<marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#22ff7a"/></marker>
+<marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2ed3ff"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="#050d0a"/>
+<!-- transitions first, then labels, then nodes -->
+<path d="M 392 120 L 272 120" fill="none" stroke="#22ff7a" stroke-width="1.4" marker-end="url(#arrow-accent)"/>
+<path d="M 272 144 L 392 144" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<path d="M 568 120 L 688 120" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 688 144 L 568 144" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<path d="M 272 332 L 392 332" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 568 332 L 688 332" fill="none" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<path d="M 776 368 L 776 424 A 8 8 0 0 1 768 432 L 192 432 A 8 8 0 0 1 184 424 L 184 368" fill="none" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<rect x="306" y="100" width="52" height="12" rx="2" fill="#050d0a"/>
+<text x="332" y="109" fill="#22ff7a" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">SWEEP HR</text>
+<rect x="298" y="152" width="68" height="12" rx="2" fill="#050d0a"/>
+<text x="332" y="161" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">FLASH 0.9 S</text>
+<rect x="598" y="100" width="60" height="12" rx="2" fill="#050d0a"/>
+<text x="628" y="109" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">SWEEP MIN</text>
+<rect x="598" y="152" width="60" height="12" rx="2" fill="#050d0a"/>
+<text x="628" y="161" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">POP 0.4 S</text>
+<rect x="314" y="312" width="36" height="12" rx="2" fill="#050d0a"/>
+<text x="332" y="321" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">SWEEP</text>
+<rect x="598" y="312" width="60" height="12" rx="2" fill="#050d0a"/>
+<text x="628" y="321" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">OPACITY 0</text>
+<rect x="448" y="440" width="64" height="12" rx="2" fill="#050d0a"/>
+<text x="480" y="449" fill="#7f9e91" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.06em">RANDOM POS</text>
+<rect x="96" y="96" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="96" y="96" width="176" height="72" rx="8" fill="rgba(34,255,122,0.10)" stroke="#22ff7a" stroke-width="1"/>
+<rect x="104" y="104" width="36" height="12" rx="2" fill="transparent" stroke="#22ff7a" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="122" y="113" fill="#22ff7a" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="184" y="138" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Ping hour</text>
+<text x="184" y="156" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">วาบขาว + คลื่น 2 วง</text>
+<rect x="392" y="96" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="392" y="96" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="400" y="104" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="418" y="113" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="480" y="138" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Shown</text>
+<text x="480" y="156" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">ขยับจุดนาทีทุก 5 วินาที</text>
+<rect x="688" y="96" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="688" y="96" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="696" y="104" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="714" y="113" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="776" y="138" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Ping minute</text>
+<text x="776" y="156" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">เด้ง + คลื่นวงเล็ก</text>
+<rect x="96" y="296" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="96" y="296" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="104" y="304" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="122" y="313" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="184" y="338" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Hidden</text>
+<text x="184" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">opacity 0</text>
+<rect x="392" y="296" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="392" y="296" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="400" y="304" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="418" y="313" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="480" y="338" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Fading</text>
+<text x="480" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">สว่างแล้วจาง 3.8 วินาที</text>
+<rect x="688" y="296" width="176" height="72" rx="8" fill="#050d0a"/>
+<rect x="688" y="296" width="176" height="72" rx="8" fill="#0b1a14" stroke="#e6f4ee" stroke-width="1"/>
+<rect x="696" y="304" width="36" height="12" rx="2" fill="transparent" stroke="#8fb3a5" stroke-opacity="0.5" stroke-width="0.8"/>
+<text x="714" y="313" fill="#8fb3a5" font-size="7" font-family="'Geist Mono',ui-monospace,monospace" text-anchor="middle" letter-spacing="0.08em">STATE</text>
+<text x="776" y="338" fill="#e6f4ee" font-size="14" font-weight="600" font-family="'Geist','Prompt',system-ui,sans-serif" text-anchor="middle">Relocate</text>
+<text x="776" y="356" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif" text-anchor="middle">สุ่มมุม 60–240°</text>
+<text x="96" y="72" fill="#7f9e91" font-size="8" font-weight="500" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.18em">HOUR / MINUTE MARKS</text>
+<text x="96" y="272" fill="#7f9e91" font-size="8" font-weight="500" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.18em">AMBIENT CONTACTS</text>
+<line x1="32" y1="496" x2="928" y2="496" stroke="rgba(230,244,238,0.12)" stroke-width="0.8"/>
+<text x="32" y="516" fill="#8fb3a5" font-size="8" font-family="'Geist Mono',ui-monospace,monospace" letter-spacing="0.14em">LEGEND</text>
+<rect x="120" y="506" width="20" height="12" rx="3" fill="rgba(34,255,122,0.10)" stroke="#22ff7a"/>
+<text x="148" y="516" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">เอฟเฟกต์เด่น</text>
+<rect x="240" y="506" width="20" height="12" rx="3" fill="#0b1a14" stroke="#e6f4ee"/>
+<text x="268" y="516" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">สถานะ</text>
+<line x1="328" y1="512" x2="348" y2="512" stroke="#8fb3a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<text x="356" y="516" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">ลำแสงกวาดผ่าน</text>
+<line x1="464" y1="512" x2="484" y2="512" stroke="#8fb3a5" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arrow)"/>
+<text x="492" y="516" fill="#8fb3a5" font-size="11" font-family="'Prompt','Geist',system-ui,sans-serif">animation จบ</text>
+</svg>
+</div>
+</div>
+</body>
+</html>
